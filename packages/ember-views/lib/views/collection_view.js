@@ -27,6 +27,11 @@ Ember.CollectionView = Ember.ContainerView.extend(
   content: null,
 
   /**
+    A pool of previously created views that can be re-used rather than recreated
+  */
+  _viewPool: [],
+
+  /**
     An optional view to display if content is set to an empty array.
 
     @type Ember.View
@@ -96,9 +101,12 @@ Ember.CollectionView = Ember.ContainerView.extend(
     // we are mutating it as we go.
     var childViews = get(this, 'childViews'), childView, idx, len;
 
+    var viewPool = get(this, 'viewPool');
+
     len = get(childViews, 'length');
     for (idx = start + removedCount - 1; idx >= start; idx--) {
-      childViews[idx].destroy();
+      //childViews[idx].destroy();
+      viewPool.push(childViews[idx]);
     }
   },
 
@@ -155,12 +163,18 @@ Ember.CollectionView = Ember.ContainerView.extend(
   },
 
   createChildView: function(view, attrs) {
-    var view = this._super(view, attrs);
+    var view = this._viewPool.pop(),
+        itemTagName,
+        tagName;
 
-    var itemTagName = get(view, 'tagName');
-    var tagName = itemTagName == null ? Ember.CollectionView.CONTAINER_MAP[get(this, 'tagName')] : itemTagName;
+    if(!view) {
+        view = this._super(view, attrs);
 
-    set(view, 'tagName', tagName);
+        itemTagName = get(view, 'tagName');
+        tagName = itemTagName == null ? Ember.CollectionView.CONTAINER_MAP[get(this, 'tagName')] : itemTagName;
+
+        set(view, 'tagName', tagName);
+    }
 
     return view;
   }
