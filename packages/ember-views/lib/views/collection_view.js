@@ -101,7 +101,7 @@ Ember.CollectionView = Ember.ContainerView.extend(
     // we are mutating it as we go.
     var childViews = get(this, 'childViews'), childView, idx, len;
 
-    var viewPool = get(this, 'viewPool');
+    var viewPool = get(this, '_viewPool');
 
     len = get(childViews, 'length');
     for (idx = start + removedCount - 1; idx >= start; idx--) {
@@ -163,17 +163,23 @@ Ember.CollectionView = Ember.ContainerView.extend(
   },
 
   createChildView: function(view, attrs) {
-    var view = this._viewPool.pop(),
+    var viewFromPool = this._viewPool.pop(),
         itemTagName,
-        tagName;
+        tagName,
+        attr
 
-    if(!view) {
+    if(!viewFromPool) {
         view = this._super(view, attrs);
 
         itemTagName = get(view, 'tagName');
         tagName = itemTagName == null ? Ember.CollectionView.CONTAINER_MAP[get(this, 'tagName')] : itemTagName;
 
         set(view, 'tagName', tagName);
+    } else {
+        view = viewFromPool;
+        for(attr in attrs) {
+            set(view, attr, attrs[attr]);
+        }
     }
 
     return view;

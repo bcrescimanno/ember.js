@@ -53,7 +53,9 @@ Ember.ContainerView = Ember.View.extend({
   */
   render: function(buffer) {
     this.forEachChildView(function(view) {
-      view.renderToBuffer(buffer);
+      if(get(view, 'state') !== 'inDOM') {
+          view.renderToBuffer(buffer);
+      }
     });
   },
 
@@ -137,6 +139,8 @@ Ember.ContainerView = Ember.View.extend({
     @private
   */
   _scheduleInsertion: function(view, prev) {
+    var inDom = get(view, 'state');
+    if(inDom) return;
     if (prev) {
       prev.get('domManager').after(view);
     } else {
@@ -191,13 +195,16 @@ Ember.ContainerView.states = {
       // If the DOM element for this container view already exists,
       // schedule each child view to insert its DOM representation after
       // bindings have finished syncing.
-      var prev = start === 0 ? null : views[start-1];
-
-      for (var i=start; i<start+added; i++) {
-        view = views[i];
-        this._scheduleInsertion(view, prev);
-        prev = view;
+      for (var i = start; i < start+added; i++) {
+          views[i].rerender();
       }
+      //var prev = start === 0 ? null : views[start-1];
+
+      //for (var i=start; i<start+added; i++) {
+        //view = views[i];
+        //this._scheduleInsertion(view, prev);
+        //prev = view;
+      //}
     }
   }
 };
