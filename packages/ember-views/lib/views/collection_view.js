@@ -27,11 +27,6 @@ Ember.CollectionView = Ember.ContainerView.extend(
   content: null,
 
   /**
-    A pool of previously created views that can be re-used rather than recreated
-  */
-  _viewPool: [],
-
-  /**
     An optional view to display if content is set to an empty array.
 
     @type Ember.View

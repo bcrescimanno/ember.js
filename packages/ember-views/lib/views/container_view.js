@@ -195,9 +195,9 @@ Ember.ContainerView.states = {
       // If the DOM element for this container view already exists,
       // schedule each child view to insert its DOM representation after
       // bindings have finished syncing.
-      for (var i = start; i < start+added; i++) {
-          views[i].rerender();
-      }
+      //for (var i = start; i < start+added; i++) {
+          //views[i].rerender();
+      //}
       //var prev = start === 0 ? null : views[start-1];
 
       //for (var i=start; i<start+added; i++) {
